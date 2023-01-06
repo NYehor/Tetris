@@ -1,0 +1,47 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        x:Class="Tetris.MainWindow"
+		Width="450" Height="550"
+        Title="Tetris"
+		KeyDown="OnKeyDownHandler"
+		KeyUp="OnKeyUpHandler"
+		>
+	<Grid ShowGridLines="True">
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="2*"></ColumnDefinition>
+			<ColumnDefinition Width="*"></ColumnDefinition>
+		</Grid.ColumnDefinitions>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"/>
+		</Grid.RowDefinitions>
+		<Canvas
+			Grid.Column="0"
+			Grid.Row="0"
+			HorizontalAlignment="Center"
+			Margin="20"
+			Name="myCanvas"
+			Background="Black"
+			Focusable="True">
+		</Canvas>
+		<Button
+			Grid.Column="1"
+			Grid.Row="0"
+			Margin="20"
+			HorizontalAlignment="Center"
+			VerticalAlignment="Bottom"
+			Click="OnStartGameBtn_Click"
+			>
+			Start game 
+		</Button>
+		<TextBlock
+			x:Name="Score_textBox"
+			Grid.Column="1"
+			Grid.Row="0"
+			HorizontalAlignment="Center"
+			Margin="20">
+			Score: 0
+		</TextBlock>
+	</Grid>
+</Window>
