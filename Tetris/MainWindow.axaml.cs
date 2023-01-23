@@ -12,7 +12,7 @@ using System.Linq;
 using System.Net;
 using System.Threading;
 using System.Timers;
-using Tetris.Game;
+using TetrisGame;
 
 namespace Tetris
 {
@@ -69,7 +69,7 @@ namespace Tetris
         }
         private void TimerTick(object? sender, EventArgs e)
         {
-            DrawGameField(gameProcess.GetFrame());
+            DrawGameField(gameProcess.GetGameFieldWithElement());
             Score_textBox.Text = "Score: " + gameProcess.Score;
         }
 
@@ -117,14 +117,18 @@ namespace Tetris
             switch (e.Key)
             {
                 case Key.A:
+                case Key.Left:
                     gameProcess.LeftStepMove();
                     return;
+                case Key.Right:
                 case Key.D:
                     gameProcess.RightStepMove();
                     return;
+                case Key.Up:
                 case Key.W:
                     gameProcess.RotateMove();
                     return;
+                case Key.Down:
                 case Key.S:
                     gameProcess.DownStepMove();
                     return;

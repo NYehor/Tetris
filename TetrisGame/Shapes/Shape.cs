@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Tetris.Game
+namespace TetrisGame
 {
     public abstract class Shape
     {
@@ -38,7 +38,9 @@ namespace Tetris.Game
                 for (int i = 0; i < ArrayOfCells.Length; i++)
                 {
                     for (int j = 0; j < ArrayOfCells[0].Length - 1; j++)
+                    { 
                         ArrayOfCells[i][j] = ArrayOfCells[i][j + 1];
+                    }
                     ArrayOfCells[i][ArrayOfCells[i].Length - 1] = CellColor.Base;
                 }
 
@@ -55,7 +57,9 @@ namespace Tetris.Game
                 for (int i = 0; i < ArrayOfCells.Length; i++)
                 {
                     for (int j = ArrayOfCells[0].Length - 1; j > 0; j--)
+                    {
                         ArrayOfCells[i][j] = ArrayOfCells[i][j - 1];
+                    }
                     ArrayOfCells[i][0] = CellColor.Base;
                 }
 
@@ -69,8 +73,7 @@ namespace Tetris.Game
         {
             for (int i = 0; i < matrix.Length; i++)
             {
-                if (matrix[i][numberOfColumn] != CellColor.Base)
-                    return false;
+                if (matrix[i][numberOfColumn] != CellColor.Base) return false;
             }
 
             return true;

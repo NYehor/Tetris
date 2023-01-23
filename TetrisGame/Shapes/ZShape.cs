@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Tetris.Game.Shapes
+namespace TetrisGame.Shapes
 {
     internal class ZShape: Shape
     {

@@ -1,17 +1,7 @@
-﻿using Avalonia.Threading;
-using JetBrains.Annotations;
+﻿using TetrisGame.Shapes;
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Data;
-using System.Linq;
-using System.Net.NetworkInformation;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Linq;
-using Tetris.Game.Shapes;
 
-namespace Tetris.Game
+namespace TetrisGame
 {
     public class GameProcess
     {
@@ -27,9 +17,8 @@ namespace Tetris.Game
         private Random random;
         private Type[] Elements;
 
-        private DispatcherTimer timer;
-
         public event Action GameOver;
+        private System.Timers.Timer timer;
         public GameProcess(int fieldWidth, int fieldHeight)
         {
             Score = 0;
@@ -45,12 +34,12 @@ namespace Tetris.Game
                 GameField[i] = new CellColor[FieldWidth];
             }
 
-            GameFieldWithElement = GameField;
-            timer = new DispatcherTimer();
-            timer.Interval = TimeSpan.FromSeconds(1);
-            timer.Tick += GameStep;
+            //  GameOver += GameOverMethod;
 
-          //  GameOver += GameOverMethod;
+            timer = new System.Timers.Timer();
+            timer.Interval = 1000;
+            timer.AutoReset = true;
+            timer.Elapsed += GameStep;
         }
 
         public void GameStep(object? sender, EventArgs e)
@@ -68,6 +57,7 @@ namespace Tetris.Game
             }
 
             for (int i = 0; i < GameField.Length; i++)
+            {
                 if (IsRowCompleted(GameField[i]))
                 {
                     Array.Clear(GameField[i]);
@@ -75,8 +65,11 @@ namespace Tetris.Game
 
                     Array.Copy(GameField, 0, tmpArr, 0, tmpArr.Length);
                     for (int j = 0; j < tmpArr.Length; j++)
+                    { 
                         GameField[j + 1] = tmpArr[j];
+                    }
                 }
+            }
         }
 
         private bool IsElementHaveSpaceToInit(Shape element)
@@ -86,8 +79,10 @@ namespace Tetris.Game
                 for (int j = 0; j < ActiveElement.ArrayOfCells[0].Length; j++)
                 {
                     if (GameField[ActiveElement.PositionRow + i][j + ActiveElement.PositionCol] != CellColor.Base &&
-                        element.ArrayOfCells[i][j] != CellColor.Base)
+                            element.ArrayOfCells[i][j] != CellColor.Base)
+                    {
                         return false;
+                    }
                 }
             }
 
@@ -102,17 +97,21 @@ namespace Tetris.Game
                 {
                     if (GameField[ActiveElement.PositionRow + i + 1][j + ActiveElement.PositionCol] != CellColor.Base &&
                         ActiveElement.ArrayOfCells[i][j] != CellColor.Base)
-                            return false;
+                    {
+                        return false;
+                    }
                 }
             }
 
             return true;
         }
         private bool IsRowCompleted(CellColor[] row)
-        { 
-            foreach(var cell in row)
-                if(cell == CellColor.Base)
+        {
+            foreach (var cell in row)
+            {
+                if (cell == CellColor.Base)
                     return false;
+            }
 
             Score += 10;
             return true;
@@ -121,13 +120,15 @@ namespace Tetris.Game
         private bool IsRowClear(CellColor[] row)
         {
             foreach (var cell in row)
+            {
                 if (cell != CellColor.Base)
                     return false;
+            }
 
             return true;
         }
 
-        public CellColor[][] GetFrame()
+        public CellColor[][] GetGameFieldWithElement()
         {
             CellColor[][] Frame = new CellColor[GameField.Length][];
 
@@ -135,7 +136,9 @@ namespace Tetris.Game
             {
                 Frame[i] = new CellColor[FieldWidth];
                 for (int j = 0; j < FieldWidth; j++)
+                {
                     Frame[i][j] = GameField[i][j];
+                }
             }
 
             for (int i = 0; i < ActiveElement.ArrayOfCells.Length; i++)
@@ -161,7 +164,9 @@ namespace Tetris.Game
             if (ActiveElement.TryMoveLeft()) return;
 
             if (ActiveElement.PositionCol > 0)
-                    ActiveElement.PositionCol--;
+            {
+                ActiveElement.PositionCol--;
+            }
         }
 
         public void RightStepMove()
@@ -169,7 +174,9 @@ namespace Tetris.Game
             if (ActiveElement.TryMoveRight()) return;
 
             if (ActiveElement.PositionCol < FieldWidth - ActiveElement.ArrayOfCells[0].Length)
+            {
                 ActiveElement.PositionCol++;
+            }
         }
 
         public void DownStepMove()
@@ -177,19 +184,21 @@ namespace Tetris.Game
             if (ActiveElement.TryMoveDown()) return;
 
             if (ActiveElement.PositionRow < FieldHeight - ActiveElement.ArrayOfCells.Length)
+            {
                 ActiveElement.PositionRow++;
+            }
         }
 
         public void RotateMove() => ActiveElement.Rotate();
 
         public void Start()
         {
-            timer.Start();
+            timer.Enabled = true;
         }
 
         public void GameOverMethod()
         {
-            timer.Stop();
+            timer.Enabled = false;
         }
     }
 }
