@@ -1,4 +1,4 @@
-﻿using TetrisGame.Shapes;
+﻿ using TetrisGame.Shapes;
 using System;
 
 namespace TetrisGame
@@ -17,7 +17,7 @@ namespace TetrisGame
         private Random random;
         private Type[] Elements;
 
-        public event Action GameOver;
+        public event Action GameOver = () => { };
         private System.Timers.Timer timer;
         public GameProcess(int fieldWidth, int fieldHeight)
         {
@@ -34,17 +34,19 @@ namespace TetrisGame
                 GameField[i] = new CellColor[FieldWidth];
             }
 
-            //  GameOver += GameOverMethod;
 
             timer = new System.Timers.Timer();
             timer.Interval = 1000;
             timer.AutoReset = true;
             timer.Elapsed += GameStep;
+
+            GameOver += () => {
+                timer.Enabled = false;
+            };
         }
 
         public void GameStep(object? sender, EventArgs e)
-        {
-            
+        {   
             if (ActiveElement.PositionRow < FieldHeight - ActiveElement.ArrayOfCells.Length &&
                 IsElementHaveSpaceToMoveDown())
             {
@@ -54,6 +56,11 @@ namespace TetrisGame
             {
                 GameField = GameFieldWithElement;
                 ActiveElement = GenereteElement();
+
+                if (!IsElementHaveSpaceToInit(ActiveElement))
+                {
+                    GameOver();
+                }
             }
 
             for (int i = 0; i < GameField.Length; i++)
@@ -114,17 +121,6 @@ namespace TetrisGame
             }
 
             Score += 10;
-            return true;
-        }
-
-        private bool IsRowClear(CellColor[] row)
-        {
-            foreach (var cell in row)
-            {
-                if (cell != CellColor.Base)
-                    return false;
-            }
-
             return true;
         }
 
@@ -191,12 +187,12 @@ namespace TetrisGame
 
         public void RotateMove() => ActiveElement.Rotate();
 
-        public void Start()
+        public void StartTimer()
         {
             timer.Enabled = true;
         }
 
-        public void GameOverMethod()
+        public void StopTimer()
         {
             timer.Enabled = false;
         }

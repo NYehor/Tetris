@@ -19,11 +19,18 @@
 		<Canvas
 			Grid.Column="0"
 			Grid.Row="0"
-			HorizontalAlignment="Center"
 			Margin="20"
 			Name="myCanvas"
 			Background="Black"
 			Focusable="True">
+			<TextBlock
+				x:Name="GameOver_textBlock"
+				FontSize="35"
+				Foreground="White"
+				IsVisible="False"
+				>
+				GAME OVER!
+			</TextBlock>
 		</Canvas>
 		<Button
 			Grid.Column="1"

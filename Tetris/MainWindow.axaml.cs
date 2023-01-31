@@ -3,13 +3,14 @@ using Avalonia.Controls;
 using Avalonia.Controls.Shapes;
 using Avalonia.Input;
 using Avalonia.Interactivity;
-using Avalonia.Media;
+using Avalonia.Media; 
 using Avalonia.Threading;
 using SkiaSharp;
 using System;
 using System.ComponentModel.Design;
 using System.Linq;
 using System.Net;
+using System.Security.Principal;
 using System.Threading;
 using System.Timers;
 using TetrisGame;
@@ -21,7 +22,6 @@ namespace Tetris
         const int LengthSide = 25;
         const int GameFieldWidth = 10;
         const int GameFieldHeight = 20;
-
         
         private DispatcherTimer timer;
         private GameProcess gameProcess;
@@ -36,6 +36,7 @@ namespace Tetris
             myCanvas.Height = 504;
 
             gameProcess = new GameProcess(GameFieldWidth, GameFieldHeight);
+            gameProcess.GameOver += GameOver;
             rectangles = new Rectangle[GameFieldHeight][];
 
             for (int i = 0; i < GameFieldHeight; i++)
@@ -57,16 +58,15 @@ namespace Tetris
             }
 
             timer = new DispatcherTimer();
-            timer.Interval = TimeSpan.FromMilliseconds(200);
+            timer.Interval = TimeSpan.FromMilliseconds(100);
             timer.Tick += TimerTick;
-
-           // gameProcess.GameOver += GameOver;
         }
 
         private void GameOver()
-        { 
-        
+        {
+            timer.Stop();
         }
+
         private void TimerTick(object? sender, EventArgs e)
         {
             DrawGameField(gameProcess.GetGameFieldWithElement());
@@ -109,9 +109,10 @@ namespace Tetris
         private void OnStartGameBtn_Click(object sender, RoutedEventArgs e)
         {
             timer.Start();
-            gameProcess.Start();
+            gameProcess.StartTimer();
         }
 
+        bool isKeyDown = false;
         private void OnKeyDownHandler(object sender, KeyEventArgs e)
         {
             switch (e.Key)
@@ -130,14 +131,26 @@ namespace Tetris
                     return;
                 case Key.Down:
                 case Key.S:
-                    gameProcess.DownStepMove();
+                    gameProcess.StopTimer();
+
+                    if (!isKeyDown)
+                    {
+                        timer.Tick += gameProcess.GameStep;
+                        isKeyDown = !isKeyDown;
+                    }
+          
                     return;
             }
         }
 
         private void OnKeyUpHandler(object sender, KeyEventArgs e)
         {
-
+            if (e.Key == Key.Down || e.Key == Key.S)
+            {
+                isKeyDown = !isKeyDown;
+                timer.Tick -= gameProcess.GameStep;
+                gameProcess.StartTimer();
+            }
         }
     }
 }
