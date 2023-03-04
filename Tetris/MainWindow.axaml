@@ -3,52 +3,86 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         x:Class="Tetris.MainWindow"
-		Width="450" Height="550"
+		Width="460" Height="600"
         Title="Tetris"
 		KeyDown="OnKeyDownHandler"
 		KeyUp="OnKeyUpHandler"
 		>
-	<Grid ShowGridLines="True">
-		<Grid.ColumnDefinitions>
-			<ColumnDefinition Width="2*"></ColumnDefinition>
-			<ColumnDefinition Width="*"></ColumnDefinition>
-		</Grid.ColumnDefinitions>
-		<Grid.RowDefinitions>
-			<RowDefinition Height="Auto"/>
-		</Grid.RowDefinitions>
-		<Canvas
-			Grid.Column="0"
-			Grid.Row="0"
-			Margin="20"
-			Name="myCanvas"
-			Background="Black"
-			Focusable="True">
-			<TextBlock
-				x:Name="GameOver_textBlock"
-				FontSize="35"
-				Foreground="White"
-				IsVisible="False"
+	<TabControl>
+		<TabItem Header="Main" VerticalContentAlignment="Center">
+			<Grid ShowGridLines="True">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="2*"></ColumnDefinition>
+					<ColumnDefinition Width="*"></ColumnDefinition>
+				</Grid.ColumnDefinitions>
+				<Grid.RowDefinitions>
+					<RowDefinition Height="Auto"/>
+				</Grid.RowDefinitions>
+				<Canvas
+					Grid.Column="0"
+					Grid.Row="0"
+					Margin="20"
+					Name="myCanvas"
+					Background="Black"
+					Focusable="True">
+					<TextBlock
+						x:Name="GameOver_textBlock"
+						FontSize="35"
+						Foreground="White"
+						IsVisible="False"
 				>
-				GAME OVER!
-			</TextBlock>
-		</Canvas>
-		<Button
-			Grid.Column="1"
-			Grid.Row="0"
-			Margin="20"
-			HorizontalAlignment="Center"
-			VerticalAlignment="Bottom"
-			Click="OnStartGameBtn_Click"
-			>
-			Start game 
-		</Button>
-		<TextBlock
-			x:Name="Score_textBox"
-			Grid.Column="1"
-			Grid.Row="0"
-			HorizontalAlignment="Center"
-			Margin="20">
-			Score: 0
-		</TextBlock>
-	</Grid>
+						GAME OVER!
+					</TextBlock>
+				</Canvas>
+				<Button
+					Grid.Column="1"
+					Grid.Row="0"
+					Margin="20"
+					HorizontalAlignment="Center"
+					VerticalAlignment="Bottom"
+					Click="OnStartGameBtn_Click"
+				>
+					Start game
+				</Button>
+				<TextBlock
+					x:Name="Score_textBox"
+					Grid.Column="1"
+					Grid.Row="0"
+					HorizontalAlignment="Center"
+					Margin="20">
+					Score: 0
+				</TextBlock>
+			</Grid>
+		</TabItem>
+		<TabItem>
+			<TabItem.Header>
+				<TextBlock VerticalAlignment="Center">Custom element</TextBlock>
+			</TabItem.Header>
+			<StackPanel>
+				<Canvas
+					Margin="20"
+					Name="CustomElementCanvas"
+					Background="Black"
+					Focusable="True">
+				</Canvas>
+				<Button
+					Margin="20"
+					HorizontalAlignment="Center"
+					VerticalAlignment="Bottom"
+					Click="OnCreateElementBtn_Click"
+				>
+					Create element
+				</Button>
+				<Button
+					Margin="20"
+					HorizontalAlignment="Center"
+					VerticalAlignment="Bottom"
+					Click="OnCreateAndSaveElementBtn_Click"
+				>
+					Create and save
+				</Button>
+			</StackPanel>
+		</TabItem>
+	</TabControl>
+	
 </Window>
