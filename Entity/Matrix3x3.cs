@@ -82,12 +82,24 @@ namespace Entity
             return newMatrix;
         }
 
-        public static Matrix3x3 Rotate(double angle, Vector3 point)
+        public static Matrix3x3 Rotate(Angle angle, Vector3 point)
         {
-            short c = (short)Math.Cos(angle * Math.PI / 180.0);
-            short s = (short)Math.Sin(angle * Math.PI / 180.0);
-
-            Matrix3x3 r = new Matrix3x3(c, (short)-s, 0, s, c, 0, 0, 0, 1);
+            Matrix3x3 r = new Matrix3x3();
+            switch (angle)
+            {
+                case Angle.Turn90:
+                    r = new Matrix3x3(0, -1, 0, 1, 0, 0, 0, 0, 1);
+                    break;
+                case Angle.Turn180:
+                    r = new Matrix3x3(-1, 0, 0, 0, -1, 0, 0, 0, 1);
+                    break;
+                case Angle.Turn270:
+                    r = new Matrix3x3(0, 1, 0, -1, 0, 0, 0, 0, 1);
+                    break;
+                case Angle.Turn360:
+                    r = new Matrix3x3(1, 0, 0, 0, 1, 0, 0, 0, 1);
+                    break;
+            }
             
             var t = Translate(new Matrix3x3(), point);
             var t1 = Translate(new Matrix3x3(), new Vector3((short)-point[0], (short)-point[1], (short)point[2]));

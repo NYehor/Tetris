@@ -7,6 +7,7 @@ using Avalonia.Media;
 using Avalonia.Threading;
 using SkiaSharp;
 using System;
+using System.IO;
 using System.ComponentModel.Design;
 using System.Drawing.Imaging;
 using System.Linq;
@@ -16,17 +17,25 @@ using System.Threading;
 using System.Timers;
 using TetrisGame;
 using Entity;
+using Data;
+using System.Collections.ObjectModel;
+using System.Collections.Generic;
+using TetrisView;
+using static TetrisView.MessageBoxWindow;
+using System.Threading.Tasks;
 
 namespace Tetris
 {
     public partial class MainWindow : Window
     {
+        public ObservableCollection<string> Items { get; }
+
         const int LengthSide = 25;
         const int GameFieldWidth = 10;
         const int GameFieldHeight = 20;
-        
-        private DispatcherTimer timer;
 
+        private IData data;
+        private DispatcherTimer timer;
         private Rectangle[,] rectangles;
         private Rectangle[,] customShapeRec;
         private CellColor[,] frame;
@@ -35,9 +44,13 @@ namespace Tetris
         private GameField GameField;
         private GameProcess GameProcess;
         private ShapeFactory ShapeFactory;
+        private Profile ActiveProfile;
+        private List<string> listOfProfiles;
 
         public MainWindow()
         {
+            Items = new ObservableCollection<string>();
+
             InitializeComponent();
             myCanvas.Focus();
             myCanvas.Width = 254;
@@ -57,13 +70,67 @@ namespace Tetris
             DrawGameField(customShapeRec, newShape);
             CustomElementCanvas.PointerPressed += PointerPressed;
 
-            ShapeFactory = new ShapeFactory();
+            string pathFolder = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "Profiles");
+            data = new TetrisGameData(pathFolder);
+
+            ActiveProfile = data.Profiles.GetByName("BaseProfile");
+
+            listOfProfiles = data.Profiles.GetAllName().ToList();
+            listOfProfiles.Add("New profile...");
+            listOfProfiles.Add("Delete profile...");
+            profileComboBox.Items = listOfProfiles;
+            profileComboBox.SelectedItem = "BaseProfile";
+            profileComboBox.SelectionChanged += ProfileChangedAsync;
+
+            ShapeFactory = new ShapeFactory(ActiveProfile);
             GameField = new GameField(GameFieldWidth, GameFieldHeight, frame, ShapeFactory);
             GameProcess = new GameProcess(GameField, GameOver);
 
             timer = new DispatcherTimer();
             timer.Interval = TimeSpan.FromMilliseconds(200);
             timer.Tick += TimerTick;
+
+            Items.Add(ActiveProfile.Name);
+        }
+
+        private async void ProfileChangedAsync(object? sender, SelectionChangedEventArgs args)
+        {
+            var text = args.AddedItems[0] as string;
+
+            if (text == "New profile...")
+            {
+                string name  = await AddProfileWindow.ShowAndTryGetName(this);
+                if (name != "")
+                {
+                    Profile newProfile = new Profile();
+                    newProfile.Name = name;
+                    listOfProfiles.Insert(0, name);
+
+                    profileComboBox.Items = listOfProfiles;
+                    profileComboBox.SelectedItem = name;
+                    data.Profiles.Insert(newProfile);
+
+                    ActiveProfile = newProfile;
+                    GameField = new GameField(GameFieldWidth, GameFieldHeight, frame, ShapeFactory);
+                    GameProcess = new GameProcess(GameField, GameOver);
+                }
+
+                return;
+            }
+
+            if (text == "Delete profile...")
+            {
+                return;
+            }
+
+            Profile profile = data.Profiles.GetByName(text);
+            if (profile != null)
+            {
+                timer.Stop();
+                ActiveProfile = profile;
+                GameField = new GameField(GameFieldWidth, GameFieldHeight, frame, ShapeFactory);
+                GameProcess = new GameProcess(GameField, GameOver);
+            }    
         }
 
         private void PointerPressed(object? sender, PointerPressedEventArgs args)
@@ -114,6 +181,7 @@ namespace Tetris
         private void GameOver()
         {
             timer.Stop();
+            MessageBoxWindow.Show(this, "Game over!", "Game tetris", MessageBoxButtons.Ok);
         }
 
         private void TimerTick(object? sender, EventArgs e)
@@ -176,7 +244,8 @@ namespace Tetris
         private void OnCreateAndSaveElementBtn_Click(object sender, RoutedEventArgs e)
         {
 
-            ShapeFactory.WriteFile(ShapeFactory.AddShape(newShape, (CellColor)rnd.Next(1, 5)));
+            ShapeFactory.AddShape(newShape, (CellColor)rnd.Next(1, 5));
+            data.Save();
             newShape = new CellColor[4, 4];
             DrawGameField(customShapeRec, newShape);
 

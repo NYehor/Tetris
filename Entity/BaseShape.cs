@@ -8,9 +8,9 @@ namespace Entity
 {
     public class BaseShape : IShape
     {
-        public Matrix3x3 Matrix { get; set; }
         public int Width { get; internal set; }
         public int Height { get; internal set; }
+        public Matrix3x3 Matrix { get; set; }
 
         internal Cell[] Shape;
 

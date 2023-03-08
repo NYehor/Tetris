@@ -51,7 +51,7 @@ namespace TetrisGame
         public void RotateElement()
         {
             var matrix = GameField.ActiveElemnt.Matrix;
-            var rotate = Matrix3x3.Rotate(90.0, new Vector3(1,1,1));
+            var rotate = Matrix3x3.Rotate(Angle.Turn90, new Vector3(1,1,1));
 
             var newMatrix = matrix * rotate;
             if (IsSaveMove(newMatrix))
