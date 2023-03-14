@@ -25,18 +25,32 @@ namespace Data
         
         private void Init()
         {
-
             try
             {
-                var txtFiles = Directory.EnumerateFiles(FolderPath, "*.txt");
-                foreach (var file in txtFiles)
+                if (Directory.Exists(FolderPath))
                 {
-                    string name = file.Substring(FolderPath.Length + 1);
-                    var profile = ReadProfileFromFile(Path.Combine(FolderPath, name));
-                    profile.Name = name.Replace(".txt", "");
+                    var txtFiles = Directory.EnumerateFiles(FolderPath, "*.txt");
+                    foreach (var file in txtFiles)
+                    {
+                        string name = file.Substring(FolderPath.Length + 1);
+                        var profile = ReadProfileFromFile(Path.Combine(FolderPath, name));
+                        profile.Name = name.Replace(".txt", "");
 
-                    Profiles.Add(profile);
+                        Profiles.Add(profile);
+                    }
+
+                    if (Profiles.Count == 0)
+                    {
+                        Profiles.Add(GetBaseProfile());
+                        Save();
+                    }
                 }
+                else
+                {
+                    Directory.CreateDirectory(FolderPath);
+                    Profiles.Add(GetBaseProfile());
+                    Save();
+                }                
             }
             catch (Exception e)
             {
@@ -108,14 +122,30 @@ namespace Data
         {
             foreach (var profile in Profiles)
             {
-                string path = Path.Combine(FolderPath, profile.Name);
-                using StreamWriter file = new(path, append: true);
-                file.WriteLine("Record:" + profile.Record);
+                SaveProfile(profile);
+            }
+        }
 
-                foreach (var shape in profile.Elements)
-                {
-                    file.WriteLine(WriteShapeToStr(shape));
-                }
+        public void SaveProfile(Profile profile)
+        {
+            string path = Path.Combine(FolderPath, profile.Name + ".txt");
+            bool flag = false;
+
+            if (File.Exists(path))
+            {
+                flag = false;
+            }
+            else
+            {
+                flag = true;
+            }
+
+            using StreamWriter file = new StreamWriter(path, flag);
+            file.WriteLine("Record:" + profile.Record);
+
+            foreach (var shape in profile.Elements)
+            {
+                file.WriteLine(WriteShapeToStr(shape));
             }
         }
 
@@ -148,6 +178,51 @@ namespace Data
             return text;
         }
 
+        private Profile GetBaseProfile()
+        {
+            var lShape = new Cell[] { 
+                new Cell(0, 0, CellColor.Orange), 
+                new Cell(1, 0, CellColor.Orange), 
+                new Cell(2, 0, CellColor.Orange), 
+                new Cell(2, 1, CellColor.Orange) 
+            };
+
+            var jShape = new Cell[] {
+                new Cell(0, 1, CellColor.Purple),
+                new Cell(1, 1, CellColor.Purple),
+                new Cell(2, 1, CellColor.Purple),
+                new Cell(2, 0, CellColor.Purple)
+            };
+
+            var zShape = new Cell[] {
+                new Cell(0, 0, CellColor.Red),
+                new Cell(1, 0, CellColor.Red),
+                new Cell(1, 1, CellColor.Red),
+                new Cell(2, 1, CellColor.Red)
+            };
+
+            var tShape = new Cell[] {
+                new Cell(1, 0, CellColor.Green),
+                new Cell(0, 1, CellColor.Green),
+                new Cell(1, 1, CellColor.Green),
+                new Cell(2, 1, CellColor.Green)
+            };
+
+            var newBaseProfile = new Profile()
+            {
+                Name = "BaseProfile",
+                Elements = new List<IShape>()
+                {
+                    new BaseShape(new Matrix3x3(), lShape, 2, 3),
+                    new BaseShape(new Matrix3x3(), jShape, 2, 3),
+                    new BaseShape(new Matrix3x3(), zShape, 4, 2),
+                    new BaseShape(new Matrix3x3(), tShape, 4, 2)
+                }
+            };
+
+            return newBaseProfile;
+        }
+
         public IEnumerable<Profile> GetAll()
         {
             return Profiles;
@@ -166,6 +241,11 @@ namespace Data
         public void Insert(Profile profile)
         {
             Profiles.Add(profile);
+        }
+
+        public void Delete(Profile profile)
+        { 
+            Profiles.Remove(profile);
         }
 
         public IEnumerable<string> GetAllName()

@@ -55,7 +55,7 @@ namespace TetrisGame
                 {
                     if (cells[i, j] != CellColor.Base)
                     {
-                        shapeCells.Add(new Cell((short)i, (short)j, cellColor));
+                        shapeCells.Add(new Cell((short)j, (short)i, cellColor));
 
                         if (w < i)
                         { 

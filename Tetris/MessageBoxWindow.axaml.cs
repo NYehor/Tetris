@@ -69,7 +69,11 @@ namespace TetrisView
                 task.TrySetResult(res);
             };
 
-            msgBox.ShowDialog(parent);
+
+            if (!msgBox.ShowActivated)
+            {
+                msgBox.ShowDialog(parent);
+            }
 
             return task.Task;
         }

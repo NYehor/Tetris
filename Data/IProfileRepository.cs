@@ -14,6 +14,7 @@ namespace Data
         Profile GetByName(string name);
         void Update(Profile profile);
         void Insert(Profile profile);
+        void Delete(Profile profile);
         void Save();
     }
 }

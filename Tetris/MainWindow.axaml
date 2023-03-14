@@ -3,100 +3,57 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         x:Class="Tetris.MainWindow"
-		Width="500" Height="650"
+		Width="320" Height="750"
         Title="Tetris"
 		KeyDown="OnKeyDownHandler"
 		KeyUp="OnKeyUpHandler"
 		>
 	<StackPanel>
-		<ComboBox x:Name="profileComboBox"
-				VerticalAlignment="Top"
-				HorizontalAlignment="Stretch"
-				Margin="10"
-				>
-		</ComboBox>
+		<ComboBox x:Name="profileComboBox" VerticalAlignment="Top" HorizontalAlignment="Stretch" Margin="10"/>
 		<TabControl>
 			<TabItem Header="Main" VerticalContentAlignment="Center">
-				<Grid ShowGridLines="True">
-					<Grid.ColumnDefinitions>
-						<ColumnDefinition Width="Auto"></ColumnDefinition>
-						<ColumnDefinition Width="Auto"></ColumnDefinition>
-					</Grid.ColumnDefinitions>
-					<Grid.RowDefinitions>
-						<RowDefinition Height="Auto"/>
-					</Grid.RowDefinitions>
-					<StackPanel
-					Grid.Column="0"
-					Grid.Row="1"
-				>
-						<Canvas
-							Margin="10"
-							Name="myCanvas"
-							Background="Black"
-							Focusable="True">
-						</Canvas>
-					</StackPanel>
-					<StackPanel
-						Width="200"
-						Margin="10"
-						Grid.Column="1"
-						Grid.Row="0"
-				>
-						<TextBlock
-							x:Name="Record_textBox"
-							HorizontalAlignment="Center"
-							Margin="10">
+				<StackPanel HorizontalAlignment="Center">
+					<Grid ColumnDefinitions="Auto,Auto" Margin="5">
+						<TextBlock x:Name="Record_textBlock" Margin="10" Grid.Column="0">
 							Record: 0
 						</TextBlock>
-						<TextBlock
-							x:Name="Score_textBox"
-							HorizontalAlignment="Center"
-							Margin="10">
+						<TextBlock x:Name="Score_textBlock" Margin="10" Grid.Column="1">
 							Score: 0
 						</TextBlock>
-						<Button
-							Margin="20"
-							HorizontalAlignment="Stretch"
-							VerticalAlignment="Bottom"
-							Click="OnStartGameBtn_Click"
-				>
-							Start game
-						</Button>
-					</StackPanel>
-				</Grid>
-
+					</Grid>
+					<Canvas Margin="10" Name="myCanvas" Background="Black" Focusable="True"/>
+					<Button Margin="10" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Click="OnStartGameBtn_Click">
+						Start game
+					</Button>
+				</StackPanel>
 			</TabItem>
 			<TabItem>
 				<TabItem.Header>
 					<TextBlock VerticalAlignment="Center">Custom element</TextBlock>
 				</TabItem.Header>
-				<StackPanel>
-					
-					<Canvas
-						Margin="20"
-						Name="CustomElementCanvas"
-						Background="Black"
-						Focusable="True">
-					</Canvas>
-					<Button
-						Margin="20"
-						HorizontalAlignment="Center"
-						VerticalAlignment="Bottom"
-						Click="OnCreateElementBtn_Click"
-				>
+				<StackPanel HorizontalAlignment="Center">
+					<Canvas Margin="10,50,10,10" Name="CustomElementCanvas" Background="Black" Focusable="True"/>
+					<Grid ColumnDefinitions="Auto,Auto" Margin="5">
+						<Button Grid.Column="0"  Margin="5" Width="100" Click="OnPreviousBtn_Click">Previous</Button>
+						<Button Grid.Column="1"  Margin="5" Width="100" Click="OnNextBtn_Click">Next</Button>
+					</Grid>
+					<Button Margin="10" HorizontalAlignment="Stretch" Click="OnNewElementBtn_Click">
+						New element
+					</Button>
+					<Button Margin="10" HorizontalAlignment="Stretch" Click="OnDeleteCurrentElementBtn_Click">
+						Delete current element
+					</Button>
+					<Button Margin="10" HorizontalAlignment="Stretch" Click="OnCreateElementBtn_Click">
 						Create element
 					</Button>
-					<Button
-						Margin="20"
-						HorizontalAlignment="Center"
-						VerticalAlignment="Bottom"
-						Click="OnCreateAndSaveElementBtn_Click"
-				>
-						Create and save
+					<Button Margin="10" HorizontalAlignment="Stretch" Click="OnSaveChangesBtn_Click">
+						Save changes
+					</Button>
+					<Button Margin="10,70,10,20" Background="Red" Foreground="White" HorizontalAlignment="Stretch" Click="OnDeleteProfileBtn_Click">
+						DELETE PROFILE
 					</Button>
 				</StackPanel>
 			</TabItem>
 		</TabControl>
 	</StackPanel>
-	
 </Window>

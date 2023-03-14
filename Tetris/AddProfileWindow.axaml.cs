@@ -34,6 +34,7 @@ namespace TetrisView
             {
                 task.TrySetResult(name);
             };
+
             window.ShowDialog(parent);
 
             return task.Task;

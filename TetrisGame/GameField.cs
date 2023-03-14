@@ -14,7 +14,7 @@ namespace TetrisGame
     {
         public int Width { get; }
         public int Height { get; }
-        public int CountOfRemovedRows { get; internal set; }
+        public int Score { get; internal set; }
 
         private ShapeFactory shapeFactory;
         public IShape ActiveElemnt {get; internal set;}
@@ -27,7 +27,7 @@ namespace TetrisGame
             Width = width;
             Height = height;
             Frame = frame;
-            CountOfRemovedRows = 0;
+            Score = 0;
             this.shapeFactory = shapeFactory;
             ActiveElemnt = this.shapeFactory.GenerateShape(new Vector3((short)(Width / 2 - 1), 0, 0));
             Oddments = new List<Cell>();
@@ -44,7 +44,7 @@ namespace TetrisGame
             }
 
             Oddments.AddRange(cells);
-            CountOfRemovedRows += CountOfRemovedCompletedRows();
+            Score += Width * CountOfRemovedCompletedRows();
             ActiveElemnt = shapeFactory.GenerateShape(new Vector3((short)(Width / 2 - 1), 0, 0));
         }
 

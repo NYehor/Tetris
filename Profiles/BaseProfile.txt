@@ -1,0 +1,5 @@
+Record:0
+Matrix:{1,0,0,0,1,0,0,0,1} Cells:{[Row:0 Column:0 Color:Orange] [Row:1 Column:0 Color:Orange] [Row:2 Column:0 Color:Orange] [Row:2 Column:1 Color:Orange] } Width:{2} Height:{3}
+Matrix:{1,0,0,0,1,0,0,0,1} Cells:{[Row:0 Column:1 Color:Purple] [Row:1 Column:1 Color:Purple] [Row:2 Column:1 Color:Purple] [Row:2 Column:0 Color:Purple] } Width:{2} Height:{3}
+Matrix:{1,0,0,0,1,0,0,0,1} Cells:{[Row:0 Column:0 Color:Red] [Row:1 Column:0 Color:Red] [Row:1 Column:1 Color:Red] [Row:2 Column:1 Color:Red] } Width:{4} Height:{2}
+Matrix:{1,0,0,0,1,0,0,0,1} Cells:{[Row:1 Column:0 Color:Green] [Row:0 Column:1 Color:Green] [Row:1 Column:1 Color:Green] [Row:2 Column:1 Color:Green] } Width:{4} Height:{2}
