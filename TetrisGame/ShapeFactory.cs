@@ -36,6 +36,13 @@ namespace TetrisGame
             return shape;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="cells"></param>
+        /// <param name="cellColor"></param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentNullException"></exception>
         public IShape AddShape(CellColor[,] cells, CellColor cellColor)
         {
             if (cells == null)

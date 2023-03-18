@@ -12,6 +12,18 @@ namespace Data
 {
     public class ProfileRepository: IProfileRepository
     {
+        const string FileExtention = ".txt";
+
+        const string RecordKeyWord = "";
+        const string MatrixKeyWord = "Matrix:{";
+        const string CellsKeyWord = " Cells:{";
+        const string WidthKeyWord = "Width:{";
+        const string HeightKeyWord = "Height:{";
+        const string SymbolOfEnd = "}";
+        const string RowKeyWord = "Row:";
+        const string ColumnKeyWord = "Column:";
+        const string ColorKeyWord = "Color:";
+
         readonly string FolderPath;
         
         private List<Profile> Profiles;
@@ -23,34 +35,37 @@ namespace Data
             Init();
         }
         
+        /// <summary>
+        ///     Load profiles from the folder
+        /// </summary>
         private void Init()
         {
             try
             {
-                if (Directory.Exists(FolderPath))
-                {
-                    var txtFiles = Directory.EnumerateFiles(FolderPath, "*.txt");
-                    foreach (var file in txtFiles)
-                    {
-                        string name = file.Substring(FolderPath.Length + 1);
-                        var profile = ReadProfileFromFile(Path.Combine(FolderPath, name));
-                        profile.Name = name.Replace(".txt", "");
-
-                        Profiles.Add(profile);
-                    }
-
-                    if (Profiles.Count == 0)
-                    {
-                        Profiles.Add(GetBaseProfile());
-                        Save();
-                    }
-                }
-                else
+                if (!Directory.Exists(FolderPath))
                 {
                     Directory.CreateDirectory(FolderPath);
+                }
+
+                var txtFiles = Directory.GetFiles(FolderPath, "*"+FileExtention);
+                foreach (var file in txtFiles)
+                {
+                    string name = file.Substring(FolderPath.Length + 1);
+                    var profile = ReadProfileFromFile(Path.Combine(FolderPath, name));
+                    profile.Name = name.Replace(FileExtention, "");
+
+                    Profiles.Add(profile);
+                }
+
+                if (Profiles.Count == 0)
+                {
                     Profiles.Add(GetBaseProfile());
                     Save();
-                }                
+                }
+            }
+            catch (FileLoadException e)
+            {
+                Console.WriteLine(e.Message);
             }
             catch (Exception e)
             {
@@ -63,7 +78,7 @@ namespace Data
             Profile profile = new Profile();
             string[] lines = File.ReadAllLines(path);
 
-            int sInd = lines[0].IndexOf("Record:") + 7;
+            int sInd = lines[0].IndexOf(RecordKeyWord) + RecordKeyWord.Length;
             int length = lines[0].Length - sInd;
             profile.Record = Convert.ToInt32(lines[0].Substring(sInd, length).Trim(' '));
 
@@ -93,9 +108,9 @@ namespace Data
                 Cell[] cells = new Cell[cellsStr.Length];
                 for (int j = 0; j < cellsStr.Length; j++)
                 {
-                    int rowInd = cellsStr[j].IndexOf("Row:") + 4;
-                    int columnInd = cellsStr[j].IndexOf("Column:") + 7;
-                    int colorInd = cellsStr[j].IndexOf("Color:") + 6;
+                    int rowInd = cellsStr[j].IndexOf(RowKeyWord) + RowKeyWord.Length;
+                    int columnInd = cellsStr[j].IndexOf(ColumnKeyWord) + ColumnKeyWord.Length;
+                    int colorInd = cellsStr[j].IndexOf(ColorKeyWord) + ColorKeyWord.Length;
 
                     short row = Convert.ToInt16(cellsStr[j].Substring(rowInd, columnInd - rowInd - 7).Trim(' '));
                     short column = Convert.ToInt16(cellsStr[j].Substring(columnInd, colorInd - columnInd - 6).Trim(' '));
@@ -128,20 +143,11 @@ namespace Data
 
         public void SaveProfile(Profile profile)
         {
-            string path = Path.Combine(FolderPath, profile.Name + ".txt");
-            bool flag = false;
+            string path = Path.Combine(FolderPath, profile.Name + FileExtention);
 
-            if (File.Exists(path))
-            {
-                flag = false;
-            }
-            else
-            {
-                flag = true;
-            }
-
-            using StreamWriter file = new StreamWriter(path, flag);
-            file.WriteLine("Record:" + profile.Record);
+            bool isExsistFile = File.Exists(path);
+            using StreamWriter file = new StreamWriter(path, !isExsistFile);
+            file.WriteLine(RecordKeyWord + profile.Record);
 
             foreach (var shape in profile.Elements)
             {
@@ -151,7 +157,7 @@ namespace Data
 
         private string WriteShapeToStr(IShape shape)
         {
-            string text = "Matrix:{";
+            string text = MatrixKeyWord;
             for (short i = 0; i < 3; i++)
             {
                 for (short j = 0; j < 3 && !(j == 2 && i == 2); j++)
@@ -161,19 +167,19 @@ namespace Data
             }
 
             text += shape.Matrix[2, 2].ToString();
-            text += "}";
+            text += SymbolOfEnd;
 
-            text += " Cells:{";
+            text += CellsKeyWord;
             var cells = shape.GetCells();
 
             foreach (var cell in cells)
             {
-                text += "[Row:" + cell.Row.ToString() + " Column:" + cell.Column.ToString() + " Color:" + cell.Color + "] ";
+                text += "["+ RowKeyWord + cell.Row.ToString() + " " + ColumnKeyWord + cell.Column.ToString() + " " + ColorKeyWord + cell.Color + "] ";
             }
 
-            text += "} ";
-            text += "Width:{" + shape.Width + "} ";
-            text += "Height:{" + shape.Height + "}";
+            text += SymbolOfEnd;
+            text += WidthKeyWord + shape.Width + SymbolOfEnd;
+            text += HeightKeyWord + shape.Height + SymbolOfEnd;
 
             return text;
         }
@@ -246,6 +252,13 @@ namespace Data
         public void Delete(Profile profile)
         { 
             Profiles.Remove(profile);
+
+            string path = Path.Combine(FolderPath, profile.Name + FileExtention);
+
+            if (File.Exists(path))
+            {
+                File.Delete(path);
+            }
         }
 
         public IEnumerable<string> GetAllName()

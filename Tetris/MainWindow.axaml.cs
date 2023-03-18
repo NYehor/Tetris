@@ -13,11 +13,18 @@ using Data;
 using System.Collections.ObjectModel;
 using TetrisView;
 using static TetrisView.MessageBoxWindow;
+using Avalonia.Styling;
 
 namespace Tetris
 {
     public partial class MainWindow : Window
     {
+        const string ScoreText = "Score: ";
+        const string RecordText = "Record: ";
+        const string NameOfFolder = "Profiles";
+        const string NameOfBaseProfile = "BaseProfile";
+        const string NewProfile_ItemOfComboBox = "New profile...";
+
         public ObservableCollection<string> Items { get; }
 
         const int LengthSide = 25;
@@ -60,23 +67,27 @@ namespace Tetris
             customShapeRec = new Rectangle[4, 4];
             InitField(customShapeRec, CustomElementCanvas, 2);
             DrawGameField(customShapeRec, newShape);
-            CustomElementCanvas.PointerPressed += PointerPressed;
+            CustomElementCanvas.PointerPressed += PointerPressedOnCustomElenementCanvas;
 
-            string pathFolder = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "Profiles");
+            string pathFolder = System.IO.Path.Combine(Directory.GetCurrentDirectory(), NameOfFolder);
             data = new TetrisGameData(pathFolder);
 
-            ActiveProfile = data.Profiles.GetByName("BaseProfile");
+            ActiveProfile = data.Profiles.GetByName(NameOfBaseProfile);
 
             listOfProfiles = new ObservableCollection<string>();
+            var t = data.Profiles.GetAllName().ToList();
             data.Profiles.GetAllName().ToList().ForEach(listOfProfiles.Add);
 
-            listOfProfiles.Add("New profile...");
+            listOfProfiles.Add(NewProfile_ItemOfComboBox);
             profileComboBox.Items = listOfProfiles;
-            profileComboBox.SelectedItem = "BaseProfile";
+            profileComboBox.SelectedItem = NameOfBaseProfile;
             profileComboBox.SelectionChanged += ProfileChangedAsync;
 
             ShapeFactory = new ShapeFactory(ActiveProfile);
-            CreateNewGame(ActiveProfile);
+            Score_textBlock.Text = ScoreText + "0";
+            Record_textBlock.Text = RecordText + Convert.ToString(ActiveProfile.Record);
+            GameField = new GameField(GameFieldWidth, GameFieldHeight, frame, ShapeFactory);
+            GameProcess = new GameProcess(GameField, GameOver);
 
             timer = new DispatcherTimer();
             timer.Interval = TimeSpan.FromMilliseconds(300);
@@ -85,11 +96,12 @@ namespace Tetris
             Items.Add(ActiveProfile.Name);
         }
 
+        
         private void CreateNewGame(Profile profile)
         {
             ActiveProfile = profile;
-            Score_textBlock.Text = "Score: 0";
-            Record_textBlock.Text = "Record: " + Convert.ToString(ActiveProfile.Record);
+            Score_textBlock.Text = ScoreText + "0";
+            Record_textBlock.Text = RecordText + Convert.ToString(ActiveProfile.Record);
             GameField = new GameField(GameFieldWidth, GameFieldHeight, frame, ShapeFactory);
             GameProcess = new GameProcess(GameField, GameOver);
         }
@@ -98,58 +110,64 @@ namespace Tetris
         {
             if (args.AddedItems.Count == 0) return;
 
-            string selected = args.AddedItems[0] as string;
+            string? selected = args.AddedItems[0] as string;
 
-            if (selected == "New profile...")
+            if (selected != null)
             {
-                string name = await AddProfileWindow.ShowAndTryGetName(this);
-
-                if (name != null)
+                if (selected == NewProfile_ItemOfComboBox)
                 {
-                    Profile newProfile = new Profile() { Name = name};
-                    data.Profiles.Insert(newProfile);
-                    listOfProfiles.Insert(0, name);
-                    profileComboBox.SelectedItem = name;
+                    string name = await AddProfileWindow.ShowAndTryGetName(this);
 
-                    CreateNewGame(newProfile);
+                    if (name != null)
+                    {
+                        Profile newProfile = new Profile() { Name = name };
+                        data.Profiles.Insert(newProfile);
+                        listOfProfiles.Insert(0, name);
+                        profileComboBox.SelectedItem = name;
+
+                        CreateNewGame(newProfile);
+                    }
+                    else
+                    {
+                        profileComboBox.SelectedIndex = 0;
+                    }
                 }
                 else
                 {
-                    profileComboBox.SelectedIndex = 0;
+                    Profile profile = data.Profiles.GetByName(selected);
+                    if (profile != null)
+                    {
+                        timer.Stop();
+                        CreateNewGame(profile);
+                    }
                 }
             }
-            else
-            {
-                Profile profile = data.Profiles.GetByName(selected);
-                if (profile != null)
-                {
-                    timer.Stop();
-                    CreateNewGame(profile);
-                }
-            } 
         }
 
-        private void PointerPressed(object? sender, PointerPressedEventArgs args)
+        private void PointerPressedOnCustomElenementCanvas(object? sender, PointerPressedEventArgs args)
         {
             var point = args.Pointer.Captured;
 
-            var x = point.Bounds.Top;
-            var y = point.Bounds.Left;
-
-            var row = (int)Math.Round(x / (CustomElementCanvas.Height / 4), 0);
-            var col = (int)Math.Round(y / (CustomElementCanvas.Width / 4), 0);
-
-
-            if (newShape[col, row] == CellColor.Base)
+            if (point != null)
             {
-                newShape[col, row] = CellColor.Red;
-            }
-            else
-            {
-                newShape[col, row] = CellColor.Base;
-            } 
+                double x = point.Bounds.Top;
+                double y = point.Bounds.Left;
 
-            DrawGameField(customShapeRec, newShape);
+                var row = (int)Math.Round(x / (CustomElementCanvas.Height / 4), 0);
+                var col = (int)Math.Round(y / (CustomElementCanvas.Width / 4), 0);
+
+
+                if (newShape[col, row] == CellColor.Base)
+                {
+                    newShape[col, row] = CellColor.Red;
+                }
+                else
+                {
+                    newShape[col, row] = CellColor.Base;
+                }
+
+                DrawGameField(customShapeRec, newShape);
+            }       
         }
 
         private void InitField(Rectangle[,] rectangles, Canvas canvas, int scale)
@@ -181,7 +199,7 @@ namespace Tetris
             if (GameField.Score > ActiveProfile.Record)
             {
                 ActiveProfile.Record = GameField.Score;
-                Record_textBlock.Text = "Record: " + Convert.ToString(ActiveProfile.Record);
+                Record_textBlock.Text = RecordText + Convert.ToString(ActiveProfile.Record);
             }
 
             MessageBoxWindow.Show(this, "Game over!", "Game tetris", MessageBoxButtons.Ok);
@@ -190,7 +208,7 @@ namespace Tetris
         private void TimerTick(object? sender, EventArgs e)
         {
             GameProcess.GameStep();
-            Score_textBlock.Text = "Score: " + Convert.ToString(GameField.Score);
+            Score_textBlock.Text = ScoreText + Convert.ToString(GameField.Score);
             GameField.DrawGameField();
             DrawGameField(rectangles, frame);
         }
@@ -243,35 +261,46 @@ namespace Tetris
 
         private void OnPreviousBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (indexOfCurrentElement > 0)
+            if (ActiveProfile.Elements.Count > 0)
             {
-                indexOfCurrentElement--;
-            }
-            else
-            {
-                indexOfCurrentElement = ActiveProfile.Elements.Count - 1;
-            }
+                if (indexOfCurrentElement > 0)
+                {
+                    indexOfCurrentElement--;
+                }
+                else
+                {
+                    indexOfCurrentElement = ActiveProfile.Elements.Count - 1;
+                }
 
-            DrawCustomElement(ActiveProfile.Elements[indexOfCurrentElement]);
+                DrawCustomElement(ActiveProfile.Elements[indexOfCurrentElement]);
+            }
         }
 
         private void OnNextBtn_Click(object sender, RoutedEventArgs e)
         {
-            if (indexOfCurrentElement < ActiveProfile.Elements.Count - 1)
+            if (ActiveProfile.Elements.Count > 0)
             {
-                indexOfCurrentElement++;
-            }
-            else
-            {
-                indexOfCurrentElement = 0;
-            }
+                if (indexOfCurrentElement < ActiveProfile.Elements.Count - 1)
+                {
+                    indexOfCurrentElement++;
+                }
+                else
+                {
+                    indexOfCurrentElement = 0;
+                }
 
-            DrawCustomElement(ActiveProfile.Elements[indexOfCurrentElement]);
+                DrawCustomElement(ActiveProfile.Elements[indexOfCurrentElement]);
+            }
         }
 
         private async void OnDeleteCurrentElementBtn_Click(object sender, RoutedEventArgs e)
         {
-            var res = await MessageBoxWindow.Show(this, "Are you sere to delete current element?", "w", MessageBoxButtons.YesNo);
+            var res = await MessageBoxWindow.Show(
+                this,
+                "Are you sure to delete current element?",
+                "Warning",
+                MessageBoxButtons.YesNo
+                );
 
             if (res == MessageBoxResult.Yes)
             {
@@ -290,7 +319,8 @@ namespace Tetris
         private void OnCreateElementBtn_Click(object sender, RoutedEventArgs e)
         {
             Random rnd = new Random();
-            ShapeFactory.AddShape(newShape, (CellColor)rnd.Next(1, 5));
+            var element = ShapeFactory.AddShape(newShape, (CellColor)rnd.Next(1, 5));
+            ActiveProfile.Elements.Add(element);
             newShape = new CellColor[4, 4];
             DrawGameField(customShapeRec, newShape);
         }
@@ -306,23 +336,41 @@ namespace Tetris
             data.Profiles.Save(); 
         }
 
-        private void OnDeleteProfileBtn_Click(object sender, RoutedEventArgs e)
+        private async void OnDeleteProfileBtn_Click(object sender, RoutedEventArgs e)
         {
             if (listOfProfiles.Count > 2)
             {
-                string selected = profileComboBox.SelectedItem.ToString();
+                var selectedItem = profileComboBox.SelectedItem;
 
-                if (selected != null && selected != "New profile...")
+                if (selectedItem != null)
                 {
-                    listOfProfiles.Remove(selected);
-                    profileComboBox.SelectedIndex = 0;
-                    data.Profiles.Delete(ActiveProfile);
-                    DrawGameField(customShapeRec, newShape);
+                    string? selected = selectedItem.ToString();
+
+                    var res = await MessageBoxWindow.Show(
+                        this,
+                        "Are you sure to delete " + selected +  " ?",
+                        "Warning",
+                        MessageBoxButtons.YesNo
+                        );
+
+                    if (res == MessageBoxResult.Yes && selected != null && selected != NewProfile_ItemOfComboBox)
+                    {
+                        listOfProfiles.Remove(selected);
+                        profileComboBox.SelectedIndex = 0;
+                        data.Profiles.Delete(data.Profiles.GetByName(selected));
+                        DrawGameField(customShapeRec, newShape);
+                    }
                 }
+                
             }
             else
             {
-                MessageBoxWindow.Show(this, "You can not delete the last profile!", "Game tetris", MessageBoxButtons.Ok);
+                await MessageBoxWindow.Show(
+                    this,
+                    "You can not delete the last profile!", 
+                    "Warning", 
+                    MessageBoxButtons.Ok
+                    );
             }
         }
 
@@ -336,6 +384,7 @@ namespace Tetris
         private void OnCreateAndSaveElementBtn_Click(object sender, RoutedEventArgs e)
         {
             data.Profiles.SaveProfile(ActiveProfile);
+            data.Save();
         }
 
         bool isKeyDown = false;

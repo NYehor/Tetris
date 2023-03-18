@@ -10,6 +10,9 @@ namespace Data
     {
         ProfileRepository Profiles { get; set; }
 
+        /// <summary>
+        /// Save all state of the repositories 
+        /// </summary>
         void Save();
     }
 }
