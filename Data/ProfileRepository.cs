@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
-using System.Security.Principal;
-using System.Text;
-using System.Xml.Linq;
 using Entity;
 
 namespace Data
@@ -47,7 +43,7 @@ namespace Data
                     Directory.CreateDirectory(FolderPath);
                 }
 
-                var txtFiles = Directory.GetFiles(FolderPath, "*"+FileExtention);
+                var txtFiles = Directory.GetFiles(FolderPath, "*" + FileExtention);
                 foreach (var file in txtFiles)
                 {
                     string name = file.Substring(FolderPath.Length + 1);
@@ -84,8 +80,8 @@ namespace Data
 
             for (int i = 1; i < lines.Length; i++)
             {
-                int sMatrixIndx = lines[i].IndexOf("Matrix:{") + 8;  
-                int fMatrixIndx = lines[i].IndexOf("}", sMatrixIndx);
+                int sMatrixIndx = lines[i].IndexOf(MatrixKeyWord) + MatrixKeyWord.Length;  
+                int fMatrixIndx = lines[i].IndexOf(SymbolOfEnd, sMatrixIndx);
 
                 string matrixStr = lines[i].Substring(sMatrixIndx, fMatrixIndx - sMatrixIndx);
                 var numbStr = matrixStr.Split(',');
@@ -119,12 +115,12 @@ namespace Data
                     cells[j] = new Cell(row, column, (CellColor)Enum.Parse(typeof(CellColor), colorStr));
                 }
 
-                int widthInd = lines[i].IndexOf("Width:{") + 7;
-                string widthStr = lines[i].Substring(widthInd, lines[i].IndexOf("}", widthInd) - widthInd).Trim(' ');
+                int widthInd = lines[i].IndexOf(WidthKeyWord) + WidthKeyWord.Length;
+                string widthStr = lines[i].Substring(widthInd, lines[i].IndexOf(SymbolOfEnd, widthInd) - widthInd).Trim(' ');
                 int width = Convert.ToInt32(widthStr);
 
-                int heightInd = lines[i].IndexOf("Height:{") + 8;
-                string heightStr = lines[i].Substring(heightInd, lines[i].IndexOf("}", heightInd) - heightInd).Trim(' ');
+                int heightInd = lines[i].IndexOf(HeightKeyWord) + HeightKeyWord.Length;
+                string heightStr = lines[i].Substring(heightInd, lines[i].IndexOf(SymbolOfEnd, heightInd) - heightInd).Trim(' ');
                 int height = Convert.ToInt32(heightStr);
 
                 profile.Elements.Add(new BaseShape(matrix, cells, width, height));
@@ -133,6 +129,9 @@ namespace Data
             return profile;
         }
 
+        /// <summary>
+        /// Save all state of profiles in file.
+        /// </summary>
         public void Save()
         {
             foreach (var profile in Profiles)
@@ -141,7 +140,7 @@ namespace Data
             }
         }
 
-        public void SaveProfile(Profile profile)
+        private void SaveProfile(Profile profile)
         {
             string path = Path.Combine(FolderPath, profile.Name + FileExtention);
 
@@ -174,7 +173,8 @@ namespace Data
 
             foreach (var cell in cells)
             {
-                text += "["+ RowKeyWord + cell.Row.ToString() + " " + ColumnKeyWord + cell.Column.ToString() + " " + ColorKeyWord + cell.Color + "] ";
+                text += "["+ RowKeyWord + cell.Row.ToString() + " " + ColumnKeyWord 
+                            + cell.Column.ToString() + " " + ColorKeyWord + cell.Color + "] ";
             }
 
             text += SymbolOfEnd;
@@ -241,7 +241,8 @@ namespace Data
 
         public void Update(Profile profile)
         {
-            Profiles.Find(p => p.Name == profile.Name);
+            var currentProfile = Profiles.Find(p => p.Name == profile.Name);
+            currentProfile = profile;
         }
 
         public void Insert(Profile profile)

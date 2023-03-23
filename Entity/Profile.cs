@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Entity
 {
@@ -15,6 +11,7 @@ namespace Entity
         public Profile() 
         {
             Elements = new List<IShape>();
+            Name = "new profile";
         }
     }
 }

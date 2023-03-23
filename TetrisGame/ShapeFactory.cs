@@ -19,7 +19,6 @@ namespace TetrisGame
         public ShapeFactory(Profile profile) 
         {
             random = new Random();
-            shapes = new List<IShape>();
             shapes = profile.Elements;
         }
 
@@ -30,7 +29,12 @@ namespace TetrisGame
         /// <returns></returns>
         public IShape GenerateShape(Vector3 location)
         {
-            var shape = (IShape)shapes[random.Next(0, shapes.Count())].Clone();
+            if (shapes.Count == 0)
+            {
+                throw new InvalidOperationException("ShapeFactory can not generate an element, because the list of elements is empty.");
+            }
+
+            IShape shape = (IShape)shapes[random.Next(0, shapes.Count())].Clone();
             shape.Matrix = Matrix3x3.Translate(shape.Matrix, location);
 
             return shape;

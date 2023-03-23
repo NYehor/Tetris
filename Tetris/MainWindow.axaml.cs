@@ -13,7 +13,6 @@ using Data;
 using System.Collections.ObjectModel;
 using TetrisView;
 using static TetrisView.MessageBoxWindow;
-using Avalonia.Styling;
 
 namespace Tetris
 {
@@ -31,6 +30,7 @@ namespace Tetris
         const int GameFieldWidth = 10;
         const int GameFieldHeight = 20;
 
+        private bool isKeyDown = false;
         private IData data;
         private DispatcherTimer timer;
         private Rectangle[,] rectangles;
@@ -75,7 +75,6 @@ namespace Tetris
             ActiveProfile = data.Profiles.GetByName(NameOfBaseProfile);
 
             listOfProfiles = new ObservableCollection<string>();
-            var t = data.Profiles.GetAllName().ToList();
             data.Profiles.GetAllName().ToList().ForEach(listOfProfiles.Add);
 
             listOfProfiles.Add(NewProfile_ItemOfComboBox);
@@ -97,13 +96,31 @@ namespace Tetris
         }
 
         
-        private void CreateNewGame(Profile profile)
+        private bool TrySetupNewGame(Profile profile)
         {
+            bool result = false;
             ActiveProfile = profile;
             Score_textBlock.Text = ScoreText + "0";
             Record_textBlock.Text = RecordText + Convert.ToString(ActiveProfile.Record);
-            GameField = new GameField(GameFieldWidth, GameFieldHeight, frame, ShapeFactory);
-            GameProcess = new GameProcess(GameField, GameOver);
+
+            if (profile.Elements.Count != 0)
+            {
+                ShapeFactory = new ShapeFactory(ActiveProfile);
+                GameField = new GameField(GameFieldWidth, GameFieldHeight, frame, ShapeFactory);
+                GameProcess = new GameProcess(GameField, GameOver);
+                result = true;
+            }
+            else
+            {
+                MessageBoxWindow.Show(
+                    this,
+                    "Add elements to your new game!",
+                    "Warning",
+                    MessageBoxButtons.Ok
+                );
+            }
+
+            return result;
         }
 
         private async void ProfileChangedAsync(object? sender, SelectionChangedEventArgs args)
@@ -111,36 +128,37 @@ namespace Tetris
             if (args.AddedItems.Count == 0) return;
 
             string? selected = args.AddedItems[0] as string;
-
-            if (selected != null)
+            if (selected == null) return;
+            
+            Profile profile = ActiveProfile;
+            timer.Stop();
+            if (selected == NewProfile_ItemOfComboBox)
             {
-                if (selected == NewProfile_ItemOfComboBox)
+                string name = await AddProfileWindow.ShowAndTryGetName(this);
+                if (name != null)
                 {
-                    string name = await AddProfileWindow.ShowAndTryGetName(this);
-
-                    if (name != null)
-                    {
-                        Profile newProfile = new Profile() { Name = name };
-                        data.Profiles.Insert(newProfile);
-                        listOfProfiles.Insert(0, name);
-                        profileComboBox.SelectedItem = name;
-
-                        CreateNewGame(newProfile);
-                    }
-                    else
-                    {
-                        profileComboBox.SelectedIndex = 0;
-                    }
+                    profile = new Profile() { Name = name };
+                    data.Profiles.Insert(profile);
+                    listOfProfiles.Insert(0, name);
+                    profileComboBox.SelectedItem = name;
                 }
                 else
                 {
-                    Profile profile = data.Profiles.GetByName(selected);
-                    if (profile != null)
-                    {
-                        timer.Stop();
-                        CreateNewGame(profile);
-                    }
+                    profileComboBox.SelectedItem = profile.Name;
                 }
+            }
+            else
+            {
+                var currentProfile = data.Profiles.GetByName(selected);
+                if (currentProfile != null)
+                {
+                    profile = currentProfile;
+                }
+            }
+
+            if (profile != ActiveProfile)
+            {
+                TrySetupNewGame(profile);
             }
         }
 
@@ -376,22 +394,17 @@ namespace Tetris
 
         private void OnStartGameBtn_Click(object sender, RoutedEventArgs e)
         {
-            GameField = new GameField(GameFieldWidth, GameFieldHeight, frame, ShapeFactory);
-            GameProcess = new GameProcess(GameField, GameOver);
-            timer.Start();
+            if (TrySetupNewGame(ActiveProfile))
+            {
+                timer.Start();
+            }
         }
 
-        private void OnCreateAndSaveElementBtn_Click(object sender, RoutedEventArgs e)
-        {
-            data.Profiles.SaveProfile(ActiveProfile);
-            data.Save();
-        }
 
-        bool isKeyDown = false;
+
         private void OnKeyDownHandler(object sender, KeyEventArgs e)
         {
             if (isKeyDown) return;
-            isKeyDown = true;
 
             switch (e.Key)
             {
@@ -416,6 +429,8 @@ namespace Tetris
                     DrawGameField(rectangles, frame);
                     return;
             }
+
+            isKeyDown = true;
         }
 
         private void OnKeyUpHandler(object sender, KeyEventArgs e)

@@ -35,7 +35,6 @@ namespace TetrisGame
 
         public void SetNextElement()
         {
-
             var cells = ActiveElemnt.GetCells();
             
             for (int i = 0; i < cells.Length; i++)
