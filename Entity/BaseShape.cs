@@ -41,6 +41,9 @@ namespace Entity
             return this;
         }
 
+        /// <summary>
+        /// Swap property of width and height
+        /// </summary>
         public void SwapWidthAndHeight()
         {
             var tmp = Height;
@@ -48,6 +51,10 @@ namespace Entity
             Width = tmp;
         }
 
+        /// <summary>
+        /// Create a clone of this object.
+        /// </summary>
+        /// <returns>Type object of BaseShape</returns>
         public object Clone()
         {
             return MemberwiseClone();

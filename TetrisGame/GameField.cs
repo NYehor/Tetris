@@ -17,7 +17,7 @@ namespace TetrisGame
         public int Score { get; internal set; }
 
         private ShapeFactory shapeFactory;
-        public IShape ActiveElemnt {get; internal set;}
+        public IShape ActiveElemnt { get; internal set; }
 
         private List<Cell> Oddments;
         private CellColor[,] Frame;
@@ -33,45 +33,51 @@ namespace TetrisGame
             Oddments = new List<Cell>();
         }
 
-        public void SetNextElement()
+
+        /// <summary>
+        ///     Try to add next element
+        /// </summary>
+        /// <returns>True if the next element added</returns>
+        public bool TryAddNextElement()
         {
-            var cells = ActiveElemnt.GetCells();
-            
-            for (int i = 0; i < cells.Length; i++)
+            bool result = true;
+
+            var newOddments = ActiveElemnt.GetCells();
+            for (int i = 0; i < newOddments.Length; i++)
             {
-                cells[i].Location = ActiveElemnt.Matrix * cells[i].Location;
+                newOddments[i].Location = ActiveElemnt.Matrix * newOddments[i].Location;
             }
 
-            Oddments.AddRange(cells);
+            Oddments.AddRange(newOddments);
             Score += Width * CountOfRemovedCompletedRows();
-            ActiveElemnt = shapeFactory.GenerateShape(new Vector3((short)(Width / 2 - 1), 0, 0));
-        }
 
-        public bool TrySetNextElement()
-        { 
-            bool result = true;
-            SetNextElement();
-
-            var cells = ActiveElemnt.GetCells();
-            for (int i = 0; i < cells.Length; i++)
+            var newActiveElemnt = shapeFactory.GenerateShape(new Vector3((short)(Width / 2 - 1), 0, 0));
+            var cells = newActiveElemnt.GetCells();
+            for (int i = 0; i < newOddments.Length && result; i++)
             {
-                cells[i].Location = ActiveElemnt.Matrix * cells[i].Location;
-                if (IsExistCellInOddments(cells[i]))
-                {
-                    result = false;
-                    break;
-                }
+                cells[i].Location = newActiveElemnt.Matrix * cells[i].Location;
+                result = !IsExistCellInOddments(cells[i]);
+            }
+
+            if (result)
+            {
+                ActiveElemnt = newActiveElemnt;
             }
 
             return result;
         }
 
+        /// <summary>
+        ///    The method checks if the cell exists in oddments
+        /// </summary>
+        /// <param name="cell">Cell for check</param>
+        /// <returns>True if the cell exists in oddments</returns>
         public bool IsExistCellInOddments(Cell cell)
         {
             return Oddments.Exists(c => c.Row == cell.Row && c.Column == cell.Column);
         }
 
-        public int CountOfRemovedCompletedRows()
+        private int CountOfRemovedCompletedRows()
         {
             int count = 0;
 
@@ -95,6 +101,9 @@ namespace TetrisGame
             return count;
         }
 
+        /// <summary>
+        /// The frame setup 
+        /// </summary>
         public void DrawGameField()
         {
             for (int i = 0; i < Width; i++)

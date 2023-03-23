@@ -24,6 +24,12 @@ namespace Entity
             array[2] = z;
         }
 
+        /// <summary>
+        ///     The operator to multiply matrix on vector
+        /// </summary>
+        /// <param name="matrix"> Matrix </param>
+        /// <param name="vector"> Vector </param>
+        /// <returns>The result of multyply operator</returns>
         public static Vector3 operator *(Matrix3x3 matrix, Vector3 vector)
         { 
             Vector3 v = new Vector3(0,0,0);

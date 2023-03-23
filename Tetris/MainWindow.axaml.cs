@@ -405,6 +405,7 @@ namespace Tetris
         private void OnKeyDownHandler(object sender, KeyEventArgs e)
         {
             if (isKeyDown) return;
+            isKeyDown = true;
 
             switch (e.Key)
             {
@@ -429,8 +430,6 @@ namespace Tetris
                     DrawGameField(rectangles, frame);
                     return;
             }
-
-            isKeyDown = true;
         }
 
         private void OnKeyUpHandler(object sender, KeyEventArgs e)

@@ -23,10 +23,10 @@ namespace TetrisGame
         }
 
         /// <summary>
-        /// 
+        ///     Method return the next random shape
         /// </summary>
         /// <param name="location"></param>
-        /// <returns></returns>
+        /// <returns>New shape</returns>
         public IShape GenerateShape(Vector3 location)
         {
             if (shapes.Count == 0)
@@ -41,11 +41,11 @@ namespace TetrisGame
         }
 
         /// <summary>
-        /// 
+        ///     Add the new element to the list
         /// </summary>
         /// <param name="cells"></param>
         /// <param name="cellColor"></param>
-        /// <returns></returns>
+        /// <returns>The new element</returns>
         /// <exception cref="ArgumentNullException"></exception>
         public IShape AddShape(CellColor[,] cells, CellColor cellColor)
         {

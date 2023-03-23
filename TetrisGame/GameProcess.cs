@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Common;
-using System.Linq;
-using System.Runtime.Intrinsics;
-using System.Text;
-using System.Threading.Tasks;
-using Entity;
+﻿using Entity;
 
 
 namespace TetrisGame
@@ -31,7 +24,7 @@ namespace TetrisGame
         {
             if (!TryMoveElement(new Vector3(0, 1, 0)))
             {
-                if (!GameField.TrySetNextElement())
+                if (!GameField.TryAddNextElement())
                 {
                     GameOver();
                 }

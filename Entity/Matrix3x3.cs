@@ -53,6 +53,12 @@ namespace Entity
             matrix[2, 2] = m33;       
         }
 
+        /// <summary>
+        ///     The operator to multiply matrices
+        /// </summary>
+        /// <param name="m1"></param>
+        /// <param name="m2"></param>
+        /// <returns>The result of the multiply of matrices</returns>
         public static Matrix3x3 operator *(Matrix3x3 m1, Matrix3x3 m2)
         { 
             Matrix3x3 m = new Matrix3x3();
@@ -72,6 +78,12 @@ namespace Entity
             return m;
         }
 
+        /// <summary>
+        ///     This method creates a new translate matrix
+        /// </summary>
+        /// <param name="matrix"></param>
+        /// <param name="vector"></param>
+        /// <returns>The new translate matrix</returns>
         public static Matrix3x3 Translate(Matrix3x3 matrix, Vector3 vector)
         {
             var newMatrix = new Matrix3x3(matrix);
@@ -82,6 +94,12 @@ namespace Entity
             return newMatrix;
         }
 
+        /// <summary>
+        ///     This method creates a new rotate matrix
+        /// </summary>
+        /// <param name="angle"> The angle of rotation </param>
+        /// <param name="point"> The point of rotation </param>
+        /// <returns>The new rotate matrix</returns>
         public static Matrix3x3 Rotate(Angle angle, Vector3 point)
         {
             Matrix3x3 r = new Matrix3x3();
