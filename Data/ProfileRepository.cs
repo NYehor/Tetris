@@ -21,7 +21,7 @@ namespace Data
         const string ColorKeyWord = "Color:";
 
         readonly string FolderPath;
-        
+
         private List<Profile> Profiles;
 
         public ProfileRepository(string folderPath)
@@ -30,7 +30,7 @@ namespace Data
             Profiles = new List<Profile>();
             Init();
         }
-        
+
         /// <summary>
         ///     Load profiles from the folder
         /// </summary>
@@ -80,7 +80,7 @@ namespace Data
 
             for (int i = 1; i < lines.Length; i++)
             {
-                int sMatrixIndx = lines[i].IndexOf(MatrixKeyWord) + MatrixKeyWord.Length;  
+                int sMatrixIndx = lines[i].IndexOf(MatrixKeyWord) + MatrixKeyWord.Length;
                 int fMatrixIndx = lines[i].IndexOf(SymbolOfEnd, sMatrixIndx);
 
                 string matrixStr = lines[i].Substring(sMatrixIndx, fMatrixIndx - sMatrixIndx);
@@ -173,7 +173,7 @@ namespace Data
 
             foreach (var cell in cells)
             {
-                text += "["+ RowKeyWord + cell.Row.ToString() + " " + ColumnKeyWord 
+                text += "[" + RowKeyWord + cell.Row.ToString() + " " + ColumnKeyWord
                             + cell.Column.ToString() + " " + ColorKeyWord + cell.Color + "] ";
             }
 
@@ -186,11 +186,11 @@ namespace Data
 
         private Profile GetBaseProfile()
         {
-            var lShape = new Cell[] { 
-                new Cell(0, 0, CellColor.Orange), 
-                new Cell(1, 0, CellColor.Orange), 
-                new Cell(2, 0, CellColor.Orange), 
-                new Cell(2, 1, CellColor.Orange) 
+            var lShape = new Cell[] {
+                new Cell(0, 0, CellColor.Orange),
+                new Cell(1, 0, CellColor.Orange),
+                new Cell(2, 0, CellColor.Orange),
+                new Cell(2, 1, CellColor.Orange)
             };
 
             var jShape = new Cell[] {
@@ -251,7 +251,7 @@ namespace Data
         }
 
         public void Delete(Profile profile)
-        { 
+        {
             Profiles.Remove(profile);
 
             string path = Path.Combine(FolderPath, profile.Name + FileExtention);

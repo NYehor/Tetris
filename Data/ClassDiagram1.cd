@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Data.TetrisGameData" Collapsed="true">
+    <Position X="0.75" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAIAAAAAAAgAAAAAAACAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>TetrisGameData.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Profiles" />
+    </ShowAsAssociation>
+    <Lollipop Position="0.591" />
+  </Class>
+  <Class Name="Data.ProfileRepository">
+    <Position X="3.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AARAAMIAAAARAoAAAIAAACASgAEAAQAIAgBCQAAAACg=</HashCode>
+      <FileName>ProfileRepository.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsCollectionAssociation>
+      <Field Name="Profiles" />
+    </ShowAsCollectionAssociation>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Entity.Profile">
+    <Position X="6" Y="3.25" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Interface Name="Data.IData">
+    <Position X="0.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAIAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>IData.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Property Name="Profiles" />
+    </ShowAsAssociation>
+  </Interface>
+  <Interface Name="Data.IProfileRepository">
+    <Position X="6" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAMAAAAAAAIAAAAAAAAAAAAEAAAAAAgAAAAAAAAg=</HashCode>
+      <FileName>IProfileRepository.cs</FileName>
+    </TypeIdentifier>
+  </Interface>
+  <Font Name="Segoe UI" Size="9.16" />
+</ClassDiagram>

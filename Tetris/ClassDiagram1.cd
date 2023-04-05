@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Tetris.MainWindow">
+    <Position X="1.25" Y="0.5" Width="1.5" />
+    <Compartments>
+      <Compartment Name="Methods" Collapsed="true" />
+    </Compartments>
+    <TypeIdentifier>
+      <HashCode>AA0ikAIBAAQMiLAIQIkEIAAgAAEAACBSBACQgQASAQQ=</HashCode>
+      <FileName>MainWindow.axaml.cs</FileName>
+    </TypeIdentifier>
+    <ShowAsAssociation>
+      <Field Name="GameField" />
+      <Field Name="GameProcess" />
+      <Field Name="ActiveProfile" />
+    </ShowAsAssociation>
+  </Class>
+  <Class Name="Entity.Profile">
+    <Position X="3.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="TetrisView.MessageBoxWindow">
+    <Position X="5.5" Y="3.5" Width="1.5" />
+    <NestedTypes>
+      <Enum Name="TetrisView.MessageBoxWindow.MessageBoxButtons" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>MessageBoxWindow.axaml.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+      <Enum Name="TetrisView.MessageBoxWindow.MessageBoxResult" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>MessageBoxWindow.axaml.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Enum>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>MessageBoxWindow.axaml.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="TetrisGame.GameField">
+    <Position X="5.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="TetrisGame.GameProcess">
+    <Position X="3.5" Y="3.25" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Font Name="Segoe UI" Size="9.16" />
+</ClassDiagram>
