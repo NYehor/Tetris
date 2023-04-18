@@ -53,7 +53,7 @@ namespace TetrisGame
 
             var newActiveElemnt = shapeFactory.GenerateShape(new Vector3((short)(Width / 2 - 1), 0, 0));
             var cells = newActiveElemnt.GetCells();
-            for (int i = 0; i < newOddments.Length && result; i++)
+            for (int i = 0; i < cells.Length && result; i++)
             {
                 cells[i].Location = newActiveElemnt.Matrix * cells[i].Location;
                 result = !IsExistCellInOddments(cells[i]);

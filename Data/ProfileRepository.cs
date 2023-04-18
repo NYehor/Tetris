@@ -10,7 +10,7 @@ namespace Data
     {
         const string FileExtention = ".txt";
 
-        const string RecordKeyWord = "";
+        const string RecordKeyWord = "Record:";
         const string MatrixKeyWord = "Matrix:{";
         const string CellsKeyWord = " Cells:{";
         const string WidthKeyWord = "Width:{";

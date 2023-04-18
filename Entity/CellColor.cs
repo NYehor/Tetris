@@ -14,6 +14,7 @@ namespace Entity
         Blue,
         Red,
         Orange,
-        Purple
+        Purple,
+        Pink
     }
 }

@@ -58,16 +58,14 @@ namespace TetrisGame
         {
             var matrix = GameField.ActiveElemnt.Matrix;
             var newMatrix = Matrix3x3.Translate(matrix, vector);
+            bool isSave = IsSaveMove(newMatrix);
 
-            if (IsSaveMove(newMatrix))
+            if (isSave)
             {
                 GameField.ActiveElemnt.Matrix = newMatrix;
-                return true;
             }
-            else
-            {
-                return false;
-            }
+
+            return isSave;
         }
 
         private bool IsSaveMove(Matrix3x3 matrix)

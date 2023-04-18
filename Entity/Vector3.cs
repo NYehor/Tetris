@@ -43,5 +43,16 @@ namespace Entity
 
             return v;
         }
+
+        public static Vector3 operator -(Vector3 vector)
+        {
+            Vector3 v = new Vector3(0, 0, 0);
+            for (short j = 0; j < 3; j++)
+            {
+                v[j] = - vector[j];
+            }
+            
+            return v;
+        }
     }
 }

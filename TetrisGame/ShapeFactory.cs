@@ -14,12 +14,12 @@ namespace TetrisGame
     public class ShapeFactory
     {
         private Random random;
-        private List<IShape> shapes; 
+        private Profile profile;
 
-        public ShapeFactory(Profile profile) 
+        public ShapeFactory(ref Profile profile) 
         {
             random = new Random();
-            shapes = profile.Elements;
+            this.profile = profile;
         }
 
         /// <summary>
@@ -29,13 +29,21 @@ namespace TetrisGame
         /// <returns>New shape</returns>
         public IShape GenerateShape(Vector3 location)
         {
-            if (shapes.Count == 0)
+            if (profile.Elements.Count == 0)
             {
                 throw new InvalidOperationException("ShapeFactory can not generate an element, because the list of elements is empty.");
             }
 
-            IShape shape = (IShape)shapes[random.Next(0, shapes.Count())].Clone();
+            IShape shape = (IShape)profile.Elements[random.Next(0, profile.Elements.Count())].Clone();
             shape.Matrix = Matrix3x3.Translate(shape.Matrix, location);
+
+            Angle angle = (Angle)random.Next(0, 3);
+            shape.Matrix = shape.Matrix * Matrix3x3.Rotate(angle, new Vector3(1, 1, 1));
+
+            if (angle == Angle.Turn90 || angle == Angle.Turn270)
+            {
+                shape.SwapWidthAndHeight();
+            }
 
             return shape;
         }
@@ -60,6 +68,7 @@ namespace TetrisGame
             List<Cell> shapeCells = new List<Cell>();
             int w = 0;
             int h = 0;
+            bool isEmpty = true;
             for (int i = 0; i < width; i++)
             {
                 for (int j = 0; j < height; j++)
@@ -77,12 +86,17 @@ namespace TetrisGame
                         {
                             h = j;
                         }
+
+                        isEmpty = false;
                     }
                 }
             }
 
             var s = new BaseShape(new Matrix3x3(), shapeCells.ToArray(), w + 1, h + 1);
-            shapes.Add(s);
+            if (!isEmpty)
+            {
+                profile.Elements.Add(s);
+            }
 
             return s;
         }

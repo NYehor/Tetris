@@ -82,7 +82,7 @@ namespace Tetris
             profileComboBox.SelectedItem = NameOfBaseProfile;
             profileComboBox.SelectionChanged += ProfileChangedAsync;
 
-            ShapeFactory = new ShapeFactory(ActiveProfile);
+            ShapeFactory = new ShapeFactory(ref ActiveProfile);
             Score_textBlock.Text = ScoreText + "0";
             Record_textBlock.Text = RecordText + Convert.ToString(ActiveProfile.Record);
             GameField = new GameField(GameFieldWidth, GameFieldHeight, frame, ShapeFactory);
@@ -105,7 +105,7 @@ namespace Tetris
 
             if (profile.Elements.Count != 0)
             {
-                ShapeFactory = new ShapeFactory(ActiveProfile);
+                ShapeFactory = new ShapeFactory(ref ActiveProfile);
                 GameField = new GameField(GameFieldWidth, GameFieldHeight, frame, ShapeFactory);
                 GameProcess = new GameProcess(GameField, GameOver);
                 result = true;
@@ -272,6 +272,10 @@ namespace Tetris
                     return Brushes.Purple;
                 case CellColor.Blue:
                     return Brushes.Blue;
+                case CellColor.Yellow:
+                    return Brushes.Yellow;
+                case CellColor.Pink:
+                    return Brushes.Pink;
             }
 
             return Brushes.Black;
@@ -337,8 +341,7 @@ namespace Tetris
         private void OnCreateElementBtn_Click(object sender, RoutedEventArgs e)
         {
             Random rnd = new Random();
-            var element = ShapeFactory.AddShape(newShape, (CellColor)rnd.Next(1, 5));
-            ActiveProfile.Elements.Add(element);
+            ShapeFactory.AddShape(newShape, (CellColor)rnd.Next(1, 5));
             newShape = new CellColor[4, 4];
             DrawGameField(customShapeRec, newShape);
         }

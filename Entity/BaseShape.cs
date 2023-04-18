@@ -30,17 +30,6 @@ namespace Entity
             return cells;
         }
 
-        public BaseShape SetCells(Cell[] cells)
-        {
-            if (cells == null)
-            {
-                throw new ArgumentNullException("cells");
-            }
-
-            Shape = cells;
-            return this;
-        }
-
         /// <summary>
         /// Swap property of width and height
         /// </summary>

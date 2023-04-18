@@ -112,7 +112,7 @@ namespace Entity
                     r = new Matrix3x3(-1, 0, 0, 0, -1, 0, 0, 0, 1);
                     break;
                 case Angle.Turn270:
-                    r = new Matrix3x3(0, 1, 0, -1, 0, 0, 0, 0, 1);
+                    r = new Matrix3x3(0, -1, 0, 1, 0, 0, 0, 0, 1);
                     break;
                 case Angle.Turn360:
                     r = new Matrix3x3(1, 0, 0, 0, 1, 0, 0, 0, 1);
@@ -120,7 +120,7 @@ namespace Entity
             }
             
             var t = Translate(new Matrix3x3(), point);
-            var t1 = Translate(new Matrix3x3(), new Vector3((short)-point[0], (short)-point[1], (short)point[2]));
+            var t1 = Translate(new Matrix3x3(), -point);
 
             return t * r * t1;
         }
